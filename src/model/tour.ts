@@ -17,7 +17,7 @@ export class Tour {
 
 
   public ith(i:number) : number {
-    return this.array[i];
+    return this.array[i%this.array.length];
   }
 
   public length() {
