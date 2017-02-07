@@ -3,7 +3,6 @@ import {Util} from "../util/util";
 import {Algorithm} from "./algorithm";
 
 
-
 class Swap {
 
   public i: number;
@@ -24,13 +23,12 @@ class Swap {
 }
 
 
-
-
 /**
  * This class implements the algorithm to solve the traveling salesman problem.
  */
 export class LocalImprovementBackup extends Algorithm {
 
+  private do3opt: boolean = true;
 
 
   /**
@@ -46,11 +44,11 @@ export class LocalImprovementBackup extends Algorithm {
     let time: number = tsp.evaluate(tour);
 
 
-    let swap:Swap;
+    let swap: Swap;
 
     while (true) {
 
-      swap = this.nextSwap(tsp,tour,time);
+      swap = this.nextSwap(tsp, tour, time);
 
       // no improvement
       if (swap == null) break;
@@ -67,8 +65,7 @@ export class LocalImprovementBackup extends Algorithm {
   }
 
 
-
-  private nextSwap(tsp: TravelingSalesmanProblem, tour: Array<number>, time: number) : Swap {
+  private nextSwap(tsp: TravelingSalesmanProblem, tour: Array<number>, time: number): Swap {
 
     let swap: Swap = null;
 
@@ -77,25 +74,25 @@ export class LocalImprovementBackup extends Algorithm {
     for (let i: number = 1; i < n - 1; i++) {
       for (let j: number = i + 1; j < n; j++) {
 
-        let timeIfSwap:number = this.ifSwap(tour,i,j,time,tsp.map);
-        if ( swap == null || timeIfSwap < swap.time) swap = new Swap(i, j, null, null, timeIfSwap);
+        let timeIf2optSwap: number = this.if2optSwap(tour, i, j, time, tsp.map);
+        if (swap == null || timeIf2optSwap < swap.time) swap = new Swap(i, j, null, null, timeIf2optSwap);
 
-        /*
+        if (this.do3opt) {
 
-        let copy: Array<number> = tour.slice(0);
-        Util.swapInverse(copy, i, j);
 
-        for (let k: number = i + 1; k < j; k++) {
+          for (let k: number = i + 1; k < j; k++) {
 
-          let timeIfSwapBegin: number = this.ifSwap(copy, i, k, timeIfSwap, tsp.map);
-          if (swap == null || timeIfSwapBegin < swap.time) swap = new Swap(i, j, i, k, timeIfSwapBegin);
+            let timeIfSwapBegin: number = this.if3optSwapBegin(tour, i, k, j, time, tsp.map);
+            if (swap == null || timeIfSwapBegin < swap.time) swap = new Swap(i, j, i, k, timeIfSwapBegin);
 
-          let timeIfSwapEnd: number = this.ifSwap(copy, k, j, timeIfSwap, tsp.map);
-          if (swap == null || timeIfSwapEnd < swap.time) swap = new Swap(i, j, k, j, timeIfSwapEnd);
+
+            let timeIfSwapEnd: number = this.if3optSwapEnd(tour, i, k, j, time, tsp.map);
+            if (swap == null || timeIfSwapEnd < swap.time) swap = new Swap(i, j, k, j, timeIfSwapEnd);
+
+          }
 
         }
 
-*/
 
       }
     }
@@ -107,8 +104,25 @@ export class LocalImprovementBackup extends Algorithm {
   }
 
 
-
-
-
-
 }
+
+
+/*
+
+
+ let copy: Array<number> = tour.slice(0);
+ Util.swapInverse(copy, i, j);
+
+ let timeIfSwapBeginSlow: number = this.if2optSwap(copy, i, k, timeIf2optSwap, tsp.map);
+ let timeIfSwapEndSlow: number = this.if2optSwap(copy, k, j, timeIf2optSwap, tsp.map);
+
+
+ console.log(timeIfSwapBeginSlow);
+ console.log(timeIfSwapBegin);
+
+ console.log(timeIfSwapEndSlow);
+ console.log(timeIfSwapEnd);
+
+ console.log("----------------");
+
+ */

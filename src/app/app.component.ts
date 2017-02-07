@@ -48,6 +48,9 @@ export class AppComponent implements AfterViewInit {
 
 
   onStart() {
+
+
+    let algorithm:Algorithm = new LocalImprovementBackup();
     //algorithm.addListener((tour) => {this.update(this.tsp, tour);});
 
 

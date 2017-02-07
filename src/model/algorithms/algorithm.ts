@@ -45,7 +45,7 @@ export abstract class Algorithm {
   }
 
 
-  protected ifSwap(tour:Array<number>, i:number, j:number, timeBeforeSwap:number, map:Map) {
+  protected if2optSwap(tour:Array<number>, i:number, j:number, timeBeforeSwap:number, map:Map) {
     let result: number = timeBeforeSwap;
     let n:number = map.size();
     result -= map.distByIndex(tour[i - 1], tour[i]);
@@ -53,6 +53,44 @@ export abstract class Algorithm {
     result += map.distByIndex(tour[i - 1], tour[j]);
     result += map.distByIndex(tour[i], tour[(j + 1) % n]);
     return result;
+  }
+
+
+  protected if3optSwapBegin(tour:Array<number>, i:number, k:number, j:number, timeBeforeSwap:number, map:Map) {
+    let t: number = timeBeforeSwap;
+    let n:number = map.size();
+
+    // new k when 2opt move is done
+    let _k:number = j - (k-i);
+
+    t -= map.distByIndex(tour[i - 1], tour[i]);
+    t -= map.distByIndex(tour[j], tour[(j + 1) % n]);
+    t -= map.distByIndex(tour[_k-1], tour[_k]);
+
+    t += map.distByIndex(tour[i - 1], tour[_k]);
+    t += map.distByIndex(tour[j], tour[_k-1]);
+    t += map.distByIndex(tour[i], tour[(j + 1) % n]);
+
+    return t;
+  }
+
+
+  protected if3optSwapEnd(tour:Array<number>, i:number, k:number, j:number, timeBeforeSwap:number, map:Map) {
+    let t: number = timeBeforeSwap;
+    let n:number = map.size();
+
+    // new k when 2opt move is done
+    let _k:number = j - (k-i);
+
+    t -= map.distByIndex(tour[i - 1], tour[i]);
+    t -= map.distByIndex(tour[j], tour[(j + 1) % n]);
+    t -= map.distByIndex(tour[_k], tour[_k+1]);
+
+    t += map.distByIndex(tour[i - 1], tour[j]);
+    t += map.distByIndex(tour[_k+1], tour[i]);
+    t += map.distByIndex(tour[_k], tour[(j + 1) % n]);
+
+    return t;
   }
 
 
