@@ -1,6 +1,24 @@
 
+h1 {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 250%;
+}
+
 
 #container {
-  margin: 20px auto 20px auto;
+  padding: 0% 10% 5% 10%;
   width: 80%;
+}
+
+
+.selected {
+  background-color: black !important;
+  color: #FFF;
+}
+
+
+.start {
+  background-color: #003399 !important;
+  color: #FFF;
 }

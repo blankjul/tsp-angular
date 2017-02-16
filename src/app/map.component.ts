@@ -1,5 +1,5 @@
 import {Component, ViewChild, AfterViewInit, Input, OnChanges, SimpleChanges} from "@angular/core";
-import {Map} from "../model/map";
+import {PointMap} from "../model/maps/point.map";
 import {Point} from "../model/point";
 import {Tour} from "../model/tour";
 
@@ -16,14 +16,6 @@ export class MapComponent implements AfterViewInit {
   @ViewChild("mycanvas")
   private canvas;
 
-  // Map which is provided as parameter
-  @Input()
-  private map: Map;
-
-  // The result of the current
-  @Input()
-  private tour: Tour;
-
 
   // listener when it is clicked on the component
   public listener: {(point: Point): void;}[] = [];
@@ -33,9 +25,10 @@ export class MapComponent implements AfterViewInit {
 
 
     this.getCanvas().addEventListener('click', (evt) => {
-      let ctx = this.getCanvasContext();
-      let x: number = evt.clientX - this.getCanvas().offsetLeft;
-      let y: number = evt.clientY - this.getCanvas().offsetTop;
+      var rect = this.getCanvas().getBoundingClientRect();
+
+      let x: number = evt.offsetX;
+      let y: number = evt.offsetY;
 
       this.listener.forEach(listener => {
         listener(new Point(x, y));
@@ -47,58 +40,67 @@ export class MapComponent implements AfterViewInit {
   }
 
 
-  private drawCities(map: Map) {
-
-    let canvas = this.canvas.nativeElement;
-    let ctx = canvas.getContext("2d");
-
-    let size: number = 4;
-
+  private drawCities(map: PointMap) {
     for (let i: number = 0; i < map.size(); i++) {
       let p: Point = map.get(i);
-      ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+      this.drawRectangle(p, 4,"#000000");
     }
+  }
 
+  private drawSelected(selected: Point) {
+    this.drawRectangle(selected, 8,"#FF0000");
+  }
+
+  private drawHome(home: Point) {
+    this.drawRectangle(home, 8,"#003399");
+  }
+
+  private drawRectangle(point:Point, size:number, color:string) {
+    let canvas = this.canvas.nativeElement;
+    let ctx = canvas.getContext("2d");
+    ctx.fillStyle = color;
+    ctx.fillRect(point.x - size / 2, point.y - size / 2, size, size);
   }
 
 
-  private drawTour(map: Map, tour: Tour) {
+  private drawTour(map: PointMap, tour: Array<number>) {
 
     // nothing to draw
-    if (tour.length() <= 1) return;
+    if (tour.length <= 1) return;
 
     let ctx = this.getCanvasContext();
 
     ctx.beginPath();
 
-    ctx.moveTo(map.get(tour.ith(0)).x, map.get(tour.ith(0)).y);
-    for (let i: number = 1; i < tour.length(); i++) {
-      ctx.lineTo(map.get(tour.ith(i)).x, map.get(tour.ith(i)).y);
+    ctx.moveTo(map.get(tour[0]).x, map.get(tour[0]).y);
+    for (let i: number = 1; i < tour.length; i++) {
+      ctx.lineTo(map.get(tour[i]).x, map.get(tour[i]).y);
     }
-    ctx.lineTo(map.get(tour.ith(0)).x, map.get(tour.ith(0)).y);
+    ctx.lineTo(map.get(tour[0]).x, map.get(tour[0]).y);
     ctx.closePath();
 
     ctx.stroke();
   }
 
 
-  public update() {
+  public update(map:PointMap, tour:Array<number>, selected:Point) {
+
     let ctx = this.getCanvasContext();
     ctx.clearRect(0, 0, this.getCanvas().width, this.getCanvas().height);
 
-    console.log(this.tour);
-
-    if (this.map != null) this.drawCities(this.map);
-    if (this.tour != null) this.drawTour(this.map, this.tour);
+    if (tour != null) this.drawTour(map, tour);
+    if (map != null) this.drawCities(map);
+    if (selected != null) this.drawSelected(selected);
+    if (map.points.length > 0) this.drawHome(map.points[0]);
 
   }
 
 
-  private getCanvas() {
+  getCanvas() {
     return this.canvas.nativeElement;
   }
 
-  private getCanvasContext() {
+  getCanvasContext() {
     return this.getCanvas().getContext("2d");
   }
 

@@ -1,13 +1,14 @@
-import {Point} from "./point"
+import {Point} from "../point";
+import {Map} from "./map";
 
 
 /**
- * Map represents a map where the salesman can travel on.
+ * PointMap represents a compMap where the salesman can travel on.
  * As distance metric the euclidean distance is used.
  */
-export class Map {
+export class PointMap extends Map {
 
-  protected points: Array<Point> = new Array<Point>();
+  public points: Array<Point> = new Array<Point>();
 
 
   public add(p: Point) {
@@ -54,6 +55,11 @@ export class Map {
   public get(idx: number): Point {
     return this.points[idx];
   }
+
+  public clear() {
+    this.points = [];
+  }
+
 
 
 }
